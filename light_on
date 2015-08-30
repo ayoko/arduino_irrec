@@ -1,0 +1,61 @@
+#!/opt/local/bin/python2.7
+
+# Learning Infrared (or IR) Remote Controller for Arduino
+# Supplemental Python script
+# www.flogics.com
+# 
+# Copyright (c) 2010-2015, Atsushi Yokoyama, Firmlogics
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the
+#    distribution.
+# 
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived
+#    from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+dev = '/dev/tty.usbmodem144421'
+# For Windows, it is said that dev should be '\.\COM1' or similar
+
+def main():
+	import fdpexpect
+	import serial
+
+	ser = serial.Serial(dev, 9600)
+	child = fdpexpect.fdspawn(ser, timeout=3)
+	child.expect('\n> ')
+
+	print "Sending modulation parameters..."
+	child.sendline("P 3455 1769 428 1314")
+	child.expect('\n> ')
+
+	print "Sending command..."
+	child.sendline("T 34 4A 9C 01 9D")
+	child.expect('\n> ')
+
+	child.close()
+	print "Done"
+
+if __name__ == "__main__":
+	main()
