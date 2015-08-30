@@ -202,7 +202,7 @@ detect_raise(void)
  * the pattern.  It aborts whenever IR state (on/off) does not change for
  * TIMEOUT_IR (microseconds).
  *
- * Note: It assumes IR detecting state is 'on' when the functions is called
+ * Note: It assumes IR detecting state is 'on' when the function is called
  */
 static int
 record_ir(int *tab, int maxlen)
