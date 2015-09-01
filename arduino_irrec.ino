@@ -42,7 +42,7 @@
 #define PORT_RED_LED	13	/* standard Arduino diagnostic LED */
 #define PORT_IR_SENSOR	7
 
-#define VERSION		"20150824"
+#define VERSION		"20150901-debug"
 #define TIMEOUT_IR	10000	/* IR pattern timeout in us (microseconds) */
 #define ERR_MARGIN	1.3	/* to allow variation of received LED on/off */
 
@@ -210,16 +210,30 @@ record_ir(int *tab, int maxlen)
 	unsigned long time;
 	int state = 1;
 	int tabpos = 0;
+	int timeout = TIMEOUT_IR;
 
 	for (;;) {
 		time = micros();
 		while (sense_ir() == state) {
-			if (micros() - time >= TIMEOUT_IR) {
+			if (micros() - time >= (unsigned long) timeout) {
 				return tabpos;
 			}
 		}
 
-		tab[tabpos ++] = micros() - time;
+		tab[tabpos] = micros() - time;
+
+		/*
+		 * This is required because some remote controller has a short
+		 * gap between the final data bit and a repeat leader (e.g.
+		 * Toshiba air conditioner).  In the case, TIMEOUT_IR can not
+		 * detect a repeat leader, so we need to set timeout length as
+		 * same as len_leader0 (or tab[1]) (refer analyze_pat()).
+		 */
+		if (tabpos == 1 && tab[1] < TIMEOUT_IR)
+			timeout = tab[1];
+
+		tabpos ++;
+
 		if (tabpos >= maxlen) {
 			diag("record_ir(): too long IR pattern");
 			return tabpos;
