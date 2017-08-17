@@ -172,7 +172,7 @@ transmit_ir_msg(const unsigned char *cmdpat, int len)
 }
 
 /*
- * Wait until we detects IR light-on, but abort whenever a key-press received
+ * Wait until we detect IR light-on, but abort whenever a key-press received
  * on Serial.  In the former case, returns 1.  Otherwise returns 0
  */
 static int
