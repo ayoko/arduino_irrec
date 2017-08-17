@@ -43,7 +43,8 @@
 #define PORT_IR_SENSOR	7
 
 #define VERSION		"20150901-debug"
-#define TIMEOUT_IR	10000	/* IR pattern timeout in us (microseconds) */
+#define TIMEOUT_IR	200000	/* IR pattern timeout in us (microseconds) */
+#define IGNORE_NOISE 1000	/* Length to ignore preceding noise (microsec) */
 #define ERR_MARGIN	1.3	/* to allow variation of received LED on/off */
 
 #define LEN_TERM_CMD	60	/* max length (byte) of terminal input */
@@ -207,20 +208,31 @@ detect_raise(void)
 static int
 record_ir(int *tab, int maxlen)
 {
+	unsigned long len;
 	unsigned long time;
+	unsigned long timeout = TIMEOUT_IR;
+	int detecting_noise = 1;
 	int state = 1;
 	int tabpos = 0;
-	int timeout = TIMEOUT_IR;
 
 	for (;;) {
 		time = micros();
 		while (sense_ir() == state) {
-			if (micros() - time >= (unsigned long) timeout) {
+			if ((len = micros() - time) >= timeout) {
 				return tabpos;
 			}
 		}
 
-		tab[tabpos] = micros() - time;
+		/*
+		 * We may see IR jitter before the receiving pattern so ignoring it.
+		 */
+		if (detecting_noise && len < IGNORE_NOISE) {
+			continue;
+		} else {
+			detecting_noise = 0;
+		}
+
+		tab[tabpos] = len;
 
 		/*
 		 * This is required because some remote controller has a short
