@@ -8,7 +8,7 @@ etc).
 
 An infrared LED should be connected to GPIO 2, 3, 4, 5 and 6 in
 parallel to source enough current to the LED.  In addition, IR sensor
-(e.g. Everlight IRM-3683N3) needs to be hooked appropriately to GPIO
+(e.g. Everlight IRM-3638N3) needs to be hooked appropriately to GPIO
 port 7.
 
 When you run the code, it goes into interactive mode.  Type 'h' and CR
